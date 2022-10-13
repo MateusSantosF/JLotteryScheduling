@@ -14,20 +14,24 @@ public class Process {
     
     
     private UUID PID;
+    private Priority priority;
+    private ProcessType type;
     private List<Ticket> tickets;
     private int timesScheduled; // numero de vezes que foi escalonado
-    private ProcessType type;
     private boolean hasRaffled;
-    private Priority priority;
+    private int CPUTimeToFinish;
+    private int unusedCPUTime;
 
     
   
-    public Process(ProcessType type, Priority priority){
+    public Process(ProcessType type, Priority priority, int timeToFinish){
         this.type = type;
         this.priority = priority;
+        this.CPUTimeToFinish = timeToFinish;
+        this.timesScheduled = 0;
         this.tickets = new ArrayList<>();
         this.hasRaffled = false;
-        PID = UUID.randomUUID();
+        this.PID = UUID.randomUUID();
     }
 
     public boolean isHasRaffled() {
@@ -57,6 +61,45 @@ public class Process {
     public void setType(ProcessType type) {
         this.type = type;
     }
+    
+    public int getCPUTimeToFinish(){
+        return this.CPUTimeToFinish;
+    }
+    
+    /**
+     * Simula o processamento do Processo pelo tempo passado por parametro.
+     * @param time 
+     */
+    public void giveCPUTime(int time){
+        
+        incrementTimesScheduled();
+        int subtract = getCPUTimeToFinish() - time;
+        
+        if(subtract == 0){
+            CPUTimeToFinish = 0;
+        }else if(subtract < 0){
+            CPUTimeToFinish = 0;
+            unusedCPUTime = -1*subtract;
+        }else{
+            this.CPUTimeToFinish = subtract;
+        }
+    }
+    
+    private void incrementTimesScheduled(){
+        this.timesScheduled++;
+    }
+    
+    public boolean hasUnusedTime(){
+        return unusedCPUTime > 0;
+    }
+    
+    public int getUnusedTime(){
+        return unusedCPUTime;
+    }
+    
+    public boolean hasFinish(){
+        return CPUTimeToFinish == 0;
+    }
 
     public UUID getPID() {
         return PID;
@@ -65,17 +108,32 @@ public class Process {
     public void setPID(UUID PID) {
         this.PID = PID;
     }
-
-    
+    /**
+     * Apresenta todas as informações referentes ao processo.
+     */
+    public void showProcessInfo(){
+        
+        System.out.printf("\n\nPID = %s\nTIME = %d\nPriority = %s \nTickets Amount = %d\nTicket Numbers = ",
+                getPID().toString(),
+                CPUTimeToFinish,
+                priority,
+                tickets.size()
+        );
+        showTicketsNumbers();
+        System.out.println("");
+    }
     
     /**
-     * Transfere os Tickets do Processo chamador, para o processo passado
-     * 
-     * @param winner 
+     * Apresenta o número dos tickets ganhos por este processo.
      */
-    public void transferTickets(Process winner){
+    private void showTicketsNumbers(){
         
+        tickets.forEach(t ->{
+            System.out.print(t.getNumber() + " |");
+        });
     }
+    
+    
     
     /**
      * Monta as informações que irão para o CSV 

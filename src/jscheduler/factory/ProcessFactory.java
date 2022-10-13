@@ -1,9 +1,9 @@
 
 package jscheduler.factory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 import jscheduler.models.Process.Priority;
 import jscheduler.models.Process.ProcessType;
 import jscheduler.models.Process.Process;
@@ -19,23 +19,25 @@ public class ProcessFactory {
      * Cria todos os processos que rodarão na CPU, e define seus tipos.
      * @param processesAmount
      */
-    public static List<Process> make(int processesAmount){
+    public static HashMap<UUID,Process> make(int processesAmount, int maxTimeToFinishProcess){
         
-        List<Process> processes = new ArrayList<>();
+        HashMap<UUID, Process> processes = new HashMap<>();
       
-        for(int i = 0; i < processesAmount; i++){  
-            processes.add(generateProcess());
+        for(int i = 0; i < processesAmount; i++){           
+            Process p = generateProcess(maxTimeToFinishProcess);
+            processes.put(p.getPID(), p);
         }
         
         return processes;
     }
     
-    private static Process generateProcess(){
+    private static Process generateProcess(int maxTimeToFinishProcess){
         
         Random random = new Random();
         ProcessType processType = null;
         Priority priority = null;
         
+        int timeToFinish = random.nextInt(maxTimeToFinishProcess) + 1;
         int randNumber = random.nextInt(3) + 1;
        
         switch (randNumber) {
@@ -53,6 +55,6 @@ public class ProcessFactory {
                 break;
         }      
         
-        return new Process(processType, priority);
+        return new Process(processType, priority, timeToFinish);
     }
 }
