@@ -38,10 +38,24 @@ public class LotteryService {
      */
     public void raffleTickets( List<Process> processes){
         
-        int floor = 0;           
-        for(int i = 0; i < maxTickets; i++){          
-            int amount = random.nextInt(maxTickets) + 1;    
-            
+        int floor = 0;
+        int priorityValue=0;
+
+        for(int i = 0; i < maxTickets; i++){
+            switch (processes.get(i).getPriority()) {
+            case HIGH:
+                priorityValue = 3;
+                break;
+            case MEDIUM:
+                priorityValue = 2;
+                break;
+            case LOW:
+                priorityValue = 1;
+                break;
+        }
+            int amount = random.nextInt(maxTickets) + 1;
+            amount*=priorityValue;
+
             insertTickets(processes.get(i), floor, amount);
             floor += amount;
         } 

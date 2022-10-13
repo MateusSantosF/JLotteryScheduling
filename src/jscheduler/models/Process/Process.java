@@ -49,6 +49,10 @@ public class Process {
     public ProcessType getType() {
         return type;
     }
+    
+    public Priority getPriority(){
+        return priority;
+    }
 
     public void setType(ProcessType type) {
         this.type = type;

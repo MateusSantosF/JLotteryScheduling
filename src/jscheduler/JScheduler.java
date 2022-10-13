@@ -27,7 +27,7 @@ public class JScheduler {
     public static void main(String[] args) {
        
         WriterService writer = WriterService.Configure()
-                                            .Path("CAMINHO DO ARQUIVO.TXT")
+                                            .Path("\"C:\\Users\\User\\Desktop\\teste.txt\"")
                                             .Build();
         
         List<Process> processes = ProcessFactory.make(AMOUNT_PROCESS);
@@ -45,6 +45,8 @@ public class JScheduler {
             p.getTickets().forEach(t ->{
                 System.out.print(t.getNumber() + " | ");
             });
+            
+            System.out.println("\nProcess priority = "+ p.getPriority());
         });
         
         System.out.println("\n");
