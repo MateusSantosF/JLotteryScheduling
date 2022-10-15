@@ -41,10 +41,7 @@ public class JScheduler {
         csvWriter.append("Role");
         csvWriter.append(",");
         csvWriter.append("Topic");
-        csvWriter.append("\n");
-
-        csvWriter.flush();
-        csvWriter.close();
+        
         
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
         HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS);
@@ -53,6 +50,7 @@ public class JScheduler {
         loterry.raffleTickets( processes.values().stream().collect(Collectors.toList()) );
         
         System.out.println("Nº TOTAL DE PROCESSOS: " + processes.size());
+        
         
         processes.values().forEach(p ->{
             p.showProcessInfo();
@@ -64,13 +62,14 @@ public class JScheduler {
         List<Ticket> REMMANING_TICKETS = new ArrayList<Ticket>();
         
         while( !processes.isEmpty() ){
+            csvWriter.append("começo while");
             
             if( loterry.hasRaffledAllTickets() ){
                 System.out.println("Sorteando novos tickets para os processos restantes...");
                 processes.values().forEach(p ->{
                     p.showProcessInfo();
                 });
-                loterry.raffleTickets( processes.values().stream().collect(Collectors.toList()) );
+                loterry.raffleTickets( processes.values().stream().collect(Collectors.toList()), processes.size() );
             }
             
             int currentTicketWinnerNumber = loterry.raffleWinner();
@@ -126,10 +125,18 @@ public class JScheduler {
                     if(!processes.isEmpty()){
 
                         System.out.println("Transferindo Tickets...");
-
-
+                        Process p = processes.values().stream().collect(Collectors.toList()).get(0);
+                        REMMANING_TICKETS.forEach(t ->{  
+                            p.addTicket(t);
+                            System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
+                            t.setPID(p.getPID());
+                        });
+                        REMMANING_TICKETS.removeAll(REMMANING_TICKETS);
+                        
+                        
                         /*if(processes.size()< winnerProcess.getTickets().size() || 
                                 processes.size() > winnerProcess.getTickets().size()){*/
+                        /*
                             processes.values().forEach(p->{
 
                                 switch(p.getPriority()){
@@ -143,6 +150,7 @@ public class JScheduler {
 
 
                                         break;
+                                    
                                     case MEDIUM:
                                         REMMANING_TICKETS.forEach(t ->{  
                                             p.addTicket(t);
@@ -158,8 +166,9 @@ public class JScheduler {
                                         });
                                         break;
                                 }
+                                
                                 REMMANING_TICKETS.removeAll(REMMANING_TICKETS);
-                            });
+                            });*/
                         //}
                     }
                 }
@@ -182,6 +191,11 @@ public class JScheduler {
         }
         
         System.out.println("\nFIM DO ESCALONAMENTO");
+        csvWriter.append("oiiiii");
+        csvWriter.append("oiiiii");
+
+        csvWriter.flush();
+        csvWriter.close();
         
     }
     

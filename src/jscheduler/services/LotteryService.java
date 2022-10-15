@@ -21,7 +21,7 @@ public class LotteryService {
     private final Random random = new Random();
     private HashMap<Integer, Boolean> sortedTickets = new HashMap<>();
     private HashMap<Integer, Ticket> tickets = new HashMap<>();
-    private final int maxTickets;
+    private int maxTickets;
     private int maxSortedNumber;
 
     public LotteryService(int maxTickets) {
@@ -38,13 +38,46 @@ public class LotteryService {
 
         int floor = 0;
         int priorityValue = 0;
+       
+        
+        
+        for (int i = 0; i < maxTickets; i++) {
+
+            Process process = processes.get(i);
+            switch (process.getPriority()) {
+                case HIGH:
+                    priorityValue = 3;
+                    break;
+                case MEDIUM:
+                    priorityValue = 2;
+                    break;
+                case LOW:
+                    priorityValue = 1;
+                    break;
+            }
+
+            int amount = random.nextInt(maxTickets) + 1;
+            amount *= priorityValue;
+            insertTickets(process, floor, amount);
+            floor += amount;
+        }
+
+        maxSortedNumber = floor;
+    }
+    
+    public void raffleTickets(List<Process> processes, int newMaxTickets) {
+
+        int floor = 0;
+        int priorityValue = 0;
         
         
         //reset variable for new raffle
-        
+        maxTickets = newMaxTickets;
         tickets = new HashMap<>();
         maxSortedNumber = 0;
         sortedTickets = new HashMap<>();
+        
+        System.out.println("Tamanho Array processos \n" + processes.size() + " Max tickets: " + maxTickets);
         
         for (int i = 0; i < maxTickets; i++) {
 
@@ -120,11 +153,11 @@ public class LotteryService {
     private void insertTickets(Process process, int currentFloor, int amount) {
 
         UUID PID = process.getPID();
-
         for (int i = currentFloor; i < (currentFloor + amount); i++) {
             Ticket ticket = new Ticket(i, PID);
             tickets.put(i, ticket);
             process.addTicket(ticket);
+           
         }
     }
     
