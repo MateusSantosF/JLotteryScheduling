@@ -1,7 +1,9 @@
 
 package jscheduler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import jscheduler.factory.ProcessFactory;
@@ -32,7 +34,7 @@ public class JScheduler {
     public static void main( String[] args ) {
        
         WriterService writer = WriterService.Configure()
-                                            .Path("COLOCA UM DIRETÓRIO VÁLIDO AKI PRA RODAR")
+                                            .Path("")
                                             .Build();
         
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
@@ -50,6 +52,7 @@ public class JScheduler {
         System.out.println("\nINICIANDO ESCALONAMENTO\n");
         
         int SHARED_TIME = 0;
+        List<Ticket> REMMANING_TICKETS = new ArrayList<Ticket>();
         
         while( !processes.isEmpty() ){
             
@@ -76,16 +79,27 @@ public class JScheduler {
             System.out.println("\tTEMPO RESTANTE: " + winnerProcess.getCPUTimeToFinish());
             
             int winnerTime = CPU_TIME + SHARED_TIME;
+            REMMANING_TICKETS.forEach(p ->{         
+                winnerProcess.addTicket(p);
+                System.out.println("Tickets transferidos com sucesso");
+            });
+            
             winnerProcess.giveCPUTime(winnerTime);  
             System.out.println("\tTEMPO SORTEADO: " + winnerTime);
             
             SHARED_TIME = 0;
+            REMMANING_TICKETS.removeAll(REMMANING_TICKETS);
             
             if(winnerProcess.hasFinish()){               
                 if(winnerProcess.hasUnusedTime()){
                     SHARED_TIME = winnerProcess.getUnusedTime(); 
                 }
-                //NESSE PONTO, PODERIAMOS DISTRIBUIR OS TICKETS RESTANTES DESTE PROCESSO Q TERMINOU, REALIMENTANDO A LISTA DE TICKETS
+               
+                if(!winnerProcess.getTickets().isEmpty()){
+                    REMMANING_TICKETS = winnerProcess.getTickets();
+                }
+                    
+                
                 writer.writeProcessInfo(winnerProcess);
                 processes.remove(winnerProcess.getPID()); // remove processo da lista
                 System.out.println("\nPROCESSOS RESTANTES: ");

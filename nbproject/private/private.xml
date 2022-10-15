@@ -3,9 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/User/Desktop/SO/JLotteryScheduling/src/jscheduler/models/Ticket.java</file>
             <file>file:/C:/Users/User/Desktop/SO/JLotteryScheduling/src/jscheduler/JScheduler.java</file>
             <file>file:/C:/Users/User/Desktop/SO/JLotteryScheduling/src/jscheduler/services/LotteryService.java</file>
-            <file>file:/C:/Users/User/Desktop/SO/JLotteryScheduling/src/jscheduler/services/WriterService.java</file>
+            <file>file:/C:/Users/User/Desktop/SO/JLotteryScheduling/src/jscheduler/models/Process/Process.java</file>
         </group>
     </open-files>
 </project-private>
