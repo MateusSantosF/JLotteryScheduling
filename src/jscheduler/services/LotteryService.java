@@ -111,6 +111,7 @@ public class LotteryService {
     public Process getProcessByTicked(Ticket ticket, HashMap<UUID, Process> processes) {
         return processes.get(tickets.get(ticket.getNumber()).getPID());
     }
+    
 
     public Ticket getTicketByNumber(int number) {
         return tickets.get(number);
@@ -126,4 +127,6 @@ public class LotteryService {
             process.addTicket(ticket);
         }
     }
+    
+   
 }

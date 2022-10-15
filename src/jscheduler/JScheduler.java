@@ -1,6 +1,8 @@
 
 package jscheduler;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +20,7 @@ import jscheduler.services.WriterService;
  */
 public class JScheduler {
 
-    private static final int GLOBAL_MAX_TICKET = 2;
+    private static final int GLOBAL_MAX_TICKET = 3;
     private static final int AMOUNT_PROCESS = GLOBAL_MAX_TICKET;
     private static final int MAX_TIME_TO_FINISH_PROCESS = 100;
     private static final int CPU_TIME = 15;
@@ -31,11 +33,18 @@ public class JScheduler {
      *  
      * @param args
      */
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws IOException {
        
-        WriterService writer = WriterService.Configure()
-                                            .Path("")
-                                            .Build();
+        FileWriter csvWriter = new FileWriter("teste.txt");
+        csvWriter.append("Name");
+        csvWriter.append(",");
+        csvWriter.append("Role");
+        csvWriter.append(",");
+        csvWriter.append("Topic");
+        csvWriter.append("\n");
+
+        csvWriter.flush();
+        csvWriter.close();
         
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
         HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS);
@@ -58,6 +67,9 @@ public class JScheduler {
             
             if( loterry.hasRaffledAllTickets() ){
                 System.out.println("Sorteando novos tickets para os processos restantes...");
+                processes.values().forEach(p ->{
+                    p.showProcessInfo();
+                });
                 loterry.raffleTickets( processes.values().stream().collect(Collectors.toList()) );
             }
             
@@ -68,47 +80,108 @@ public class JScheduler {
             System.out.println("\tPID Processo Sorteado: " + winnerTicket.getPID());
             
             Process winnerProcess = loterry.getProcessByTicked(winnerTicket, processes);
+            
+            
            
             loterry.removeRaffledTicket(winnerTicket); // remove o ticket da lista de tickets globais
             
             if(winnerProcess == null){ // se for nulo, o processo que ganhou o ticket ja terminou! 
+                
+                
                 System.out.println("\tTEMPO RESTANTE: 0");
-                return;
+                 processes.values().forEach(p ->{
+                    p.showProcessInfo();
+                });
+                    return;
+                
             }
             
             System.out.println("\tTEMPO RESTANTE: " + winnerProcess.getCPUTimeToFinish());
             
+            
+           
+            
             int winnerTime = CPU_TIME + SHARED_TIME;
-            REMMANING_TICKETS.forEach(p ->{         
-                winnerProcess.addTicket(p);
-                System.out.println("Tickets transferidos com sucesso");
-            });
+            
+            
             
             winnerProcess.giveCPUTime(winnerTime);  
             System.out.println("\tTEMPO SORTEADO: " + winnerTime);
             
+            
+            
+            
             SHARED_TIME = 0;
-            REMMANING_TICKETS.removeAll(REMMANING_TICKETS);
+            
             
             if(winnerProcess.hasFinish()){               
                 if(winnerProcess.hasUnusedTime()){
                     SHARED_TIME = winnerProcess.getUnusedTime(); 
                 }
+                
+               processes.remove(winnerProcess.getPID()); // remove processo da lista
                
                 if(!winnerProcess.getTickets().isEmpty()){
-                    REMMANING_TICKETS = winnerProcess.getTickets();
+                    REMMANING_TICKETS.addAll(winnerProcess.getTickets());
+                    if(!processes.isEmpty()){
+
+                        System.out.println("Transferindo Tickets...");
+
+
+                        /*if(processes.size()< winnerProcess.getTickets().size() || 
+                                processes.size() > winnerProcess.getTickets().size()){*/
+                            processes.values().forEach(p->{
+
+                                switch(p.getPriority()){
+
+                                    case HIGH:
+                                        REMMANING_TICKETS.forEach(t ->{  
+                                            p.addTicket(t);
+                                            System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
+                                            t.setPID(p.getPID());
+                                        });
+
+
+                                        break;
+                                    case MEDIUM:
+                                        REMMANING_TICKETS.forEach(t ->{  
+                                            p.addTicket(t);
+                                            System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
+                                            t.setPID(p.getPID());
+                                        });
+                                        break;
+                                    case LOW:
+                                        REMMANING_TICKETS.forEach(t ->{  
+                                            p.addTicket(t);
+                                            System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
+                                            t.setPID(p.getPID());
+                                        });
+                                        break;
+                                }
+                                REMMANING_TICKETS.removeAll(REMMANING_TICKETS);
+                            });
+                        //}
+                    }
                 }
                     
                 
-                writer.writeProcessInfo(winnerProcess);
-                processes.remove(winnerProcess.getPID()); // remove processo da lista
-                System.out.println("\nPROCESSOS RESTANTES: ");
-                processes.values().forEach(p ->{
-                   p.showProcessInfo();
-                });
+                
+                if(!processes.isEmpty()){
+                    System.out.println("\nPROCESSOS RESTANTES: ");
+                    processes.values().forEach(p ->{
+                       p.showProcessInfo();
+                    });
+
+                    System.out.println("");
+                }
+                
+                
             }
+            
  
         }
+        
+        System.out.println("\nFIM DO ESCALONAMENTO");
         
     }
     
