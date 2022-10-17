@@ -38,10 +38,12 @@ public class JScheduler {
      */
     public static void main( String[] args ) throws IOException {
        
-        WriterService writer = WriterService.Configure().Path("D://Users//gabi0//Desktop//teste//teste.csv").Build();
+        WriterService writer = WriterService.Configure().Path("detalhado.csv").Build();
+        WriterService writer2 = WriterService.Configure().Path("geral.csv").Build();
            
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
         HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS);
+        HashMap<UUID,Process> finishedProcesses = new HashMap<UUID,Process>();
         
         // Sorteia tickets para o processo atual
         loterry.raffleTickets( processes.values().stream().collect(Collectors.toList()) );
@@ -111,6 +113,7 @@ public class JScheduler {
                 }
                 
                processes.remove(winnerProcess.getPID()); // remove processo da lista
+               finishedProcesses.put(winnerProcess.getPID(), winnerProcess);
                writer.writeProcessInfo(winnerProcess.getInfo());
                
                 if(!winnerProcess.getTickets().isEmpty()){
@@ -143,7 +146,11 @@ public class JScheduler {
         
        System.out.println("\nFIM DO ESCALONAMENTO");
        writer.closeBuffer();
-        
+       
+       finishedProcesses.values().forEach( p ->{
+           writer2.writeProcessInfo(p.getInfo());
+       });
+       writer2.closeBuffer();
     }
     
 }
