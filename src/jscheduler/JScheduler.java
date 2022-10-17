@@ -3,6 +3,9 @@ package jscheduler;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,12 +38,7 @@ public class JScheduler {
      */
     public static void main( String[] args ) throws IOException {
        
-        FileWriter csvWriter = new FileWriter("teste.txt");
-        csvWriter.append("Name");
-        csvWriter.append(",");
-        csvWriter.append("Role");
-        csvWriter.append(",");
-        csvWriter.append("Topic");
+        WriterService writer = WriterService.Configure().Path("D://Users//gabi0//Desktop//teste//teste.csv").Build();
         
         
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
@@ -62,12 +60,13 @@ public class JScheduler {
         List<Ticket> REMMANING_TICKETS = new ArrayList<Ticket>();
         
         while( !processes.isEmpty() ){
-            csvWriter.append("começo while");
+            
             
             if( loterry.hasRaffledAllTickets() ){
                 System.out.println("Sorteando novos tickets para os processos restantes...");
                 processes.values().forEach(p ->{
                     p.showProcessInfo();
+                    
                 });
                 loterry.raffleTickets( processes.values().stream().collect(Collectors.toList()), processes.size() );
             }
@@ -79,6 +78,7 @@ public class JScheduler {
             System.out.println("\tPID Processo Sorteado: " + winnerTicket.getPID());
             
             Process winnerProcess = loterry.getProcessByTicked(winnerTicket, processes);
+            writer.writeProcessInfo(winnerProcess.getInfo());
             
             
            
@@ -119,6 +119,7 @@ public class JScheduler {
                 }
                 
                processes.remove(winnerProcess.getPID()); // remove processo da lista
+               writer.writeProcessInfo(winnerProcess.getInfo());
                
                 if(!winnerProcess.getTickets().isEmpty()){
                     REMMANING_TICKETS.addAll(winnerProcess.getTickets());
@@ -132,44 +133,7 @@ public class JScheduler {
                             t.setPID(p.getPID());
                         });
                         REMMANING_TICKETS.removeAll(REMMANING_TICKETS);
-                        
-                        
-                        /*if(processes.size()< winnerProcess.getTickets().size() || 
-                                processes.size() > winnerProcess.getTickets().size()){*/
-                        /*
-                            processes.values().forEach(p->{
 
-                                switch(p.getPriority()){
-
-                                    case HIGH:
-                                        REMMANING_TICKETS.forEach(t ->{  
-                                            p.addTicket(t);
-                                            System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
-                                            t.setPID(p.getPID());
-                                        });
-
-
-                                        break;
-                                    
-                                    case MEDIUM:
-                                        REMMANING_TICKETS.forEach(t ->{  
-                                            p.addTicket(t);
-                                            System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
-                                            t.setPID(p.getPID());
-                                        });
-                                        break;
-                                    case LOW:
-                                        REMMANING_TICKETS.forEach(t ->{  
-                                            p.addTicket(t);
-                                            System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
-                                            t.setPID(p.getPID());
-                                        });
-                                        break;
-                                }
-                                
-                                REMMANING_TICKETS.removeAll(REMMANING_TICKETS);
-                            });*/
-                        //}
                     }
                 }
                     
@@ -191,11 +155,7 @@ public class JScheduler {
         }
         
         System.out.println("\nFIM DO ESCALONAMENTO");
-        csvWriter.append("oiiiii");
-        csvWriter.append("oiiiii");
-
-        csvWriter.flush();
-        csvWriter.close();
+       writer.closeBuffer();
         
     }
     

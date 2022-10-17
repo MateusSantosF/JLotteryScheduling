@@ -140,7 +140,7 @@ public class Process {
      * Monta as informações que irão para o CSV 
      */
     public String getInfo(){
-        return "";
+        return  this.getPID() + ", " + this.getPriority() + ", " + this.getTickets().size() + ", " + this.getCPUTimeToFinish() + ", " + this.getUnusedTime();
     }
     
    
