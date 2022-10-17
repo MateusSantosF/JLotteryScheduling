@@ -21,6 +21,7 @@ public class Process {
     private boolean hasRaffled;
     private int CPUTimeToFinish;
     private int unusedCPUTime;
+    private int schedulerCounter;
 
     
   
@@ -38,6 +39,15 @@ public class Process {
         return hasRaffled;
     }
 
+    public int getSchedulerCounter() {
+        return schedulerCounter;
+    }
+
+    public void setSchedulerCounter(int schedulerCounter) {
+        this.schedulerCounter = schedulerCounter;
+    }
+    
+    
     public void setHasRaffled() {
         this.hasRaffled = true;
     }
@@ -140,7 +150,12 @@ public class Process {
      * Monta as informações que irão para o CSV 
      */
     public String getInfo(){
-        return  this.getPID() + ", " + this.getPriority() + ", " + this.getTickets().size() + ", " + this.getCPUTimeToFinish() + ", " + this.getUnusedTime();
+        return  this.getPID() + ", " +
+                this.getPriority() + 
+                ", " + this.getTickets().size() +
+                ", " + this.getCPUTimeToFinish() +
+                ", " + this.getUnusedTime() +
+                ", " + this.getSchedulerCounter();
     }
     
    

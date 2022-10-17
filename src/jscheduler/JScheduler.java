@@ -39,8 +39,7 @@ public class JScheduler {
     public static void main( String[] args ) throws IOException {
        
         WriterService writer = WriterService.Configure().Path("D://Users//gabi0//Desktop//teste//teste.csv").Build();
-        
-        
+           
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
         HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS);
         
@@ -57,7 +56,8 @@ public class JScheduler {
         System.out.println("\nINICIANDO ESCALONAMENTO\n");
         
         int SHARED_TIME = 0;
-        List<Ticket> REMMANING_TICKETS = new ArrayList<Ticket>();
+        int SCHEDULER_COUNT = 0;
+        List<Ticket> REMANING_TICKETS = new ArrayList<Ticket>();
         
         while( !processes.isEmpty() ){
             
@@ -78,10 +78,10 @@ public class JScheduler {
             System.out.println("\tPID Processo Sorteado: " + winnerTicket.getPID());
             
             Process winnerProcess = loterry.getProcessByTicked(winnerTicket, processes);
+            winnerProcess.setSchedulerCounter(SCHEDULER_COUNT);
+            
             writer.writeProcessInfo(winnerProcess.getInfo());
-            
-            
-           
+        
             loterry.removeRaffledTicket(winnerTicket); // remove o ticket da lista de tickets globais
             
             if(winnerProcess == null){ // se for nulo, o processo que ganhou o ticket ja terminou! 
@@ -91,25 +91,17 @@ public class JScheduler {
                  processes.values().forEach(p ->{
                     p.showProcessInfo();
                 });
-                    return;
-                
+                return;            
             }
             
             System.out.println("\tTEMPO RESTANTE: " + winnerProcess.getCPUTimeToFinish());
-            
-            
-           
-            
+        
             int winnerTime = CPU_TIME + SHARED_TIME;
             
-            
-            
+                     
             winnerProcess.giveCPUTime(winnerTime);  
             System.out.println("\tTEMPO SORTEADO: " + winnerTime);
-            
-            
-            
-            
+                       
             SHARED_TIME = 0;
             
             
@@ -122,23 +114,20 @@ public class JScheduler {
                writer.writeProcessInfo(winnerProcess.getInfo());
                
                 if(!winnerProcess.getTickets().isEmpty()){
-                    REMMANING_TICKETS.addAll(winnerProcess.getTickets());
+                    REMANING_TICKETS.addAll(winnerProcess.getTickets());
                     if(!processes.isEmpty()){
 
                         System.out.println("Transferindo Tickets...");
                         Process p = processes.values().stream().collect(Collectors.toList()).get(0);
-                        REMMANING_TICKETS.forEach(t ->{  
+                        REMANING_TICKETS.forEach(t ->{  
                             p.addTicket(t);
                             System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
                             t.setPID(p.getPID());
                         });
-                        REMMANING_TICKETS.removeAll(REMMANING_TICKETS);
-
+                        REMANING_TICKETS.removeAll(REMANING_TICKETS);
                     }
                 }
-                    
-                
-                
+                                
                 if(!processes.isEmpty()){
                     System.out.println("\nPROCESSOS RESTANTES: ");
                     processes.values().forEach(p ->{
@@ -146,15 +135,13 @@ public class JScheduler {
                     });
 
                     System.out.println("");
-                }
-                
-                
+                }               
             }
             
- 
+            SCHEDULER_COUNT++;
         }
         
-        System.out.println("\nFIM DO ESCALONAMENTO");
+       System.out.println("\nFIM DO ESCALONAMENTO");
        writer.closeBuffer();
         
     }
