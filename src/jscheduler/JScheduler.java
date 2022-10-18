@@ -45,7 +45,8 @@ public class JScheduler {
         
        
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
-        HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS);
+        //HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS);
+        HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS, 10, 2,3);
         HashMap<UUID,Process> finishedProcesses = new HashMap<UUID,Process>();
         
         
