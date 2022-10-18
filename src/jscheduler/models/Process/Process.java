@@ -20,6 +20,7 @@ public class Process {
     private int timesScheduled; // numero de vezes que foi escalonado
     private boolean hasRaffled;
     private int CPUTimeToFinish;
+    private int CPUTimeConsumed;
     private int unusedCPUTime;
     private int schedulerCounter;
 
@@ -29,11 +30,20 @@ public class Process {
         this.type = type;
         this.priority = priority;
         this.CPUTimeToFinish = timeToFinish;
+        this.CPUTimeConsumed = 0;
         this.timesScheduled = 0;
         this.tickets = new ArrayList<>();
         this.hasRaffled = false;
         this.PID = UUID.randomUUID();
     }
+
+    public int getCPUTimeConsumed() {
+        return CPUTimeConsumed;
+    }
+    
+    
+    
+    
 
     public boolean isHasRaffled() {
         return hasRaffled;
@@ -87,11 +97,15 @@ public class Process {
         
         if(subtract == 0){
             CPUTimeToFinish = 0;
+            this.CPUTimeConsumed += time; //somando tmepo consumido
         }else if(subtract < 0){
+            this.CPUTimeConsumed += getCPUTimeToFinish(); //somando o tempo consumido (se o tempo sorteado > tempo que resta, soma o tempo que resta como consumido)
             CPUTimeToFinish = 0;
             unusedCPUTime = -1*subtract;
+            
         }else{
             this.CPUTimeToFinish = subtract;
+            this.CPUTimeConsumed += time; //soma tempo consumido
         }
     }
     
@@ -144,6 +158,9 @@ public class Process {
         });
     }
     
+    public void removeTicket(Ticket ticket){
+        this.tickets.remove(ticket);
+    }
     
     
     /**
@@ -155,7 +172,8 @@ public class Process {
                 ", " + this.getTickets().size() +
                 ", " + this.getCPUTimeToFinish() +
                 ", " + this.getUnusedTime() +
-                ", " + this.getSchedulerCounter();
+                ", " + this.getSchedulerCounter() +
+                ", " + this.getCPUTimeConsumed(); 
     }
     
    

@@ -4,12 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/models/Process/Process.java</file>
-            <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/services/WriterService.java</file>
-            <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/models/Process/ProcessType.java</file>
-            <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/JScheduler.java</file>
-            <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/models/Ticket.java</file>
-            <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/models/Process/Priority.java</file>
             <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/services/LotteryService.java</file>
+            <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/models/Ticket.java</file>
+            <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/services/WriterService.java</file>
+            <file>file:/D:/Users/gabi0/IF/2022%20-%202°%20semestre/Sistemas%20Operacionais/Projeto%20Escalonador/JLotteryScheduling/src/jscheduler/JScheduler.java</file>
         </group>
     </open-files>
 </project-private>

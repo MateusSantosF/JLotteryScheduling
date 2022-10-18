@@ -23,8 +23,8 @@ import jscheduler.services.WriterService;
  */
 public class JScheduler {
 
-    private static final int GLOBAL_MAX_TICKET = 3;
-    private static final int AMOUNT_PROCESS = GLOBAL_MAX_TICKET;
+    private static final int GLOBAL_MAX_TICKET = 15;
+    private static final int AMOUNT_PROCESS = 15;
     private static final int MAX_TIME_TO_FINISH_PROCESS = 100;
     private static final int CPU_TIME = 15;
     private static final double MULTIPLIER = 0.05;
@@ -39,11 +39,15 @@ public class JScheduler {
     public static void main( String[] args ) throws IOException {
        
         WriterService writer = WriterService.Configure().Path("detalhado.csv").Build();
-        WriterService writer2 = WriterService.Configure().Path("geral.csv").Build();
+        WriterService writerFim = WriterService.Configure().Path("fim.csv").Build();
+        WriterService writerComeco = WriterService.Configure().Path("comeco.csv").Build();
            
+        
+       
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
         HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS);
         HashMap<UUID,Process> finishedProcesses = new HashMap<UUID,Process>();
+        
         
         // Sorteia tickets para o processo atual
         loterry.raffleTickets( processes.values().stream().collect(Collectors.toList()) );
@@ -53,7 +57,9 @@ public class JScheduler {
         
         processes.values().forEach(p ->{
             p.showProcessInfo();
+            writerComeco.writeProcessInfo(p.getInfo());
         });
+        writerComeco.closeBuffer();
         
         System.out.println("\nINICIANDO ESCALONAMENTO\n");
         
@@ -85,6 +91,7 @@ public class JScheduler {
             writer.writeProcessInfo(winnerProcess.getInfo());
         
             loterry.removeRaffledTicket(winnerTicket); // remove o ticket da lista de tickets globais
+            winnerProcess.removeTicket(winnerTicket);
             
             if(winnerProcess == null){ // se for nulo, o processo que ganhou o ticket ja terminou! 
                 
@@ -114,22 +121,30 @@ public class JScheduler {
                 
                processes.remove(winnerProcess.getPID()); // remove processo da lista
                finishedProcesses.put(winnerProcess.getPID(), winnerProcess);
-               writer.writeProcessInfo(winnerProcess.getInfo());
+              
                
                 if(!winnerProcess.getTickets().isEmpty()){
+                    
                     REMANING_TICKETS.addAll(winnerProcess.getTickets());
+                    
                     if(!processes.isEmpty()){
 
                         System.out.println("Transferindo Tickets...");
                         Process p = processes.values().stream().collect(Collectors.toList()).get(0);
-                        REMANING_TICKETS.forEach(t ->{  
+                        REMANING_TICKETS.forEach(t ->{ 
+                            
                             p.addTicket(t);
+                            winnerProcess.removeTicket(t);
                             System.out.println("\t\tTicket " + t.getNumber() + " transferido para " + p.getPID());
                             t.setPID(p.getPID());
                         });
                         REMANING_TICKETS.removeAll(REMANING_TICKETS);
+                        
                     }
+                    
                 }
+                
+                writer.writeProcessInfo(winnerProcess.getInfo());
                                 
                 if(!processes.isEmpty()){
                     System.out.println("\nPROCESSOS RESTANTES: ");
@@ -148,9 +163,9 @@ public class JScheduler {
        writer.closeBuffer();
        
        finishedProcesses.values().forEach( p ->{
-           writer2.writeProcessInfo(p.getInfo());
+           writerFim.writeProcessInfo(p.getInfo());
        });
-       writer2.closeBuffer();
+       writerFim.closeBuffer();
     }
     
 }
