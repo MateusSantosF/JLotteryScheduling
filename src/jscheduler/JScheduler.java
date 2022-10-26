@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -41,12 +42,12 @@ public class JScheduler {
         WriterService writer = WriterService.Configure().Path("detalhado.csv").Build();
         WriterService writerFim = WriterService.Configure().Path("fim.csv").Build();
         WriterService writerComeco = WriterService.Configure().Path("comeco.csv").Build();
-           
+        
         
        
         LotteryService loterry = new LotteryService(GLOBAL_MAX_TICKET);  
         //HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS);
-        HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS, 10, 2,3);
+        HashMap<UUID,Process> processes = ProcessFactory.make(AMOUNT_PROCESS, MAX_TIME_TO_FINISH_PROCESS, 3, 2, 10);
         HashMap<UUID,Process> finishedProcesses = new HashMap<UUID,Process>();
         
         
@@ -60,6 +61,7 @@ public class JScheduler {
             p.showProcessInfo();
             writerComeco.writeProcessInfo(p.getInfo());
         });
+        
         writerComeco.closeBuffer();
         
         System.out.println("\nINICIANDO ESCALONAMENTO\n");
@@ -90,6 +92,7 @@ public class JScheduler {
             winnerProcess.setSchedulerCounter(SCHEDULER_COUNT);
             
             writer.writeProcessInfo(winnerProcess.getInfo());
+            
         
             loterry.removeRaffledTicket(winnerTicket); // remove o ticket da lista de tickets globais
             winnerProcess.removeTicket(winnerTicket);

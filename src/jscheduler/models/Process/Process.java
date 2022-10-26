@@ -161,6 +161,10 @@ public class Process {
     public void removeTicket(Ticket ticket){
         this.tickets.remove(ticket);
     }
+
+    public int getTimesScheduled() {
+        return timesScheduled;
+    }
     
     
     /**
@@ -173,7 +177,8 @@ public class Process {
                 ", " + this.getCPUTimeToFinish() +
                 ", " + this.getUnusedTime() +
                 ", " + this.getSchedulerCounter() +
-                ", " + this.getCPUTimeConsumed(); 
+                ", " + this.getCPUTimeConsumed() +
+                ", " + this.getTimesScheduled();
     }
     
    

@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jscheduler.models.interfaces.IPath;
@@ -74,13 +75,14 @@ public class WriterService implements IPath{
      * @param process 
      */
     public void writeProcessInfo(String info){
-       
+       Date time = new Date();
         
         if(!file.exists()) throw new Error("Arquivo informado não existe.");
         try {
             
             bufferedWriter.newLine();
             bufferedWriter.append(info);
+            bufferedWriter.append(", " + time.getTime());
             
             bufferedWriter.flush();
             writer.flush();
